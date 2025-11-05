@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import app from './app.js';
-import FitMate from '../backend/FitMate.env';
 
 const PORT = process.env.PORT || 4000;
 const MONGO_URI = process.env.MONGO_URI;
