@@ -1,4 +1,4 @@
-# 💰 Personal Finance Dashboard
+# 💰 FinanceMate - Personal Finance Dashboard
 
 A **React.js + Vite** and **MongoDB** web application that helps users track income, expenses, and visualize their financial balance in real time — all in one clean, single-page dashboard.
 
@@ -15,7 +15,7 @@ It works like an **interactive Excel sheet**, where users can enter their **sala
 - 🗂️ **Category System** — Expenses are organized by categories for better visualization.
 - ⚡ **Single Page Application (SPA)** — Everything visible right after login, no unnecessary navigation.
 - 🧮 **Real-Time Calculations** — Automatically updates balance and chart when data changes.
-- 🗒️ **Documentation File** — Includes a `DOCS.txt` explaining how the app works and its structure.
+- 🗒️ **Documentation File** — Includes a `docs.txt` explaining how the app works and its structure.
 
 ---
 
@@ -23,11 +23,13 @@ It works like an **interactive Excel sheet**, where users can enter their **sala
 
 **Frontend:**
 - React.js (with Vite)
+- TailwindCSS, Chart.js, React Router
 - HTML5, CSS3, JavaScript (ES6+)
 
 **Backend:**
-- Node.js (API setup)
-- MongoDB (Database)
+- Node.js + Express
+- MongoDB (Mongoose)
+- JWT Authentication
 
 **Other Tools:**
 - Chart.js (for Pie Chart visualization)
@@ -40,7 +42,7 @@ It works like an **interactive Excel sheet**, where users can enter their **sala
 
 1. The user logs in or creates an account.
 2. Inputs their **monthly salary**.
-3. Adds **expenses** with predefined or custom categories.
+3. Adds **expenses** with predefined categories.
 4. The system calculates:
    - 💰 Total Salary
    - 💸 Total Expenses
@@ -54,70 +56,114 @@ It works like an **interactive Excel sheet**, where users can enter their **sala
 ```
 📁 project-root
 │
-├── 📁 client/               # React + Vite Frontend
+├── 📁 frontend/              # React + Vite Frontend
 │   ├── src/
 │   │   ├── components/
 │   │   ├── pages/
+│   │   ├── context/
+│   │   ├── services/
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   └── package.json
 │
-├── 📁 server/               # Backend and MongoDB connection
-│   ├── models/
-│   ├── routes/
-│   ├── index.js
+├── 📁 backend/               # Backend and MongoDB connection
+│   ├── src/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── controllers/
+│   │   ├── middlewares/
+│   │   ├── app.js
+│   │   └── server.js
 │   └── .env
 │
-├── DOCS.txt                 # Documentation and explanations
+├── docs.txt                  # Documentation and explanations
+├── rodar.bat                 # Automatic setup and run script
+├── start.bat                 # Start application
+├── stop.bat                  # Stop servers
+├── setup.bat                 # Install dependencies
 └── README.md
 ```
 
 ---
 
-## 🧑‍💻 Setup Instructions
+## 🧑‍💻 Quick Setup (Windows)
 
-### 1. Clone the repository
+### Automatic Setup
 ```bash
-git clone https://github.com/your-username/personal-finance-dashboard.git
-cd personal-finance-dashboard
+rodar.bat
 ```
 
-### 2. Install dependencies
+### Manual Setup
+
+#### 1. Clone the repository
+```bash
+git clone https://github.com/ArturBrazLopes/FitMate.git
+cd FitMate
+```
+
+#### 2. Install dependencies
 **Frontend:**
 ```bash
-cd client
+cd frontend
 npm install
 ```
 **Backend:**
 ```bash
-cd server
+cd backend
 npm install
 ```
 
-### 3. Configure environment variables
-Create a `.env` file inside `/server` and add:
+#### 3. Configure environment variables
+Create a `.env` file inside `/backend` and add:
 ```
 MONGO_URI=your_mongodb_connection_string
-PORT=5000
+JWT_SECRET=your_jwt_secret
+PORT=4000
+NODE_ENV=development
 ```
 
-### 4. Run the app
-**Frontend:**
+#### 4. Run the app
+**Start everything:**
 ```bash
-npm run dev
+start.bat
 ```
-**Backend:**
-```bash
-npm start
-```
+
+**Or manually:**
+- Frontend: `cd frontend && npm run dev`
+- Backend: `cd backend && npm start`
 
 ---
 
-## 🧾 Example Categories
+## 📋 Available Scripts
+
+| Arquivo | Função |
+|---------|--------|
+| `rodar.bat` | Automatic setup, configuration, and start |
+| `start.bat` | Start both frontend and backend servers |
+| `stop.bat` | Stop all running servers |
+| `setup.bat` | Install all dependencies |
+| `config-mongodb.bat` | Configure MongoDB connection |
+
+---
+
+## 🌐 Access
+
+- **Frontend:** http://localhost:5173
+- **Backend API:** http://localhost:4000
+
+---
+
+## 🧾 Predefined Categories
 
 - Food
 - Transport
-- Rent
-- Entertainment
+- Leisure
+- Bills
 - Health
 - Others
+
+---
+
+## 📚 Documentation
+
+For detailed documentation, see `docs.txt` in the project root.

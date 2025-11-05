@@ -1,0 +1,419 @@
+FINANCEMATE - COMPLETE DOCUMENTATION
+=====================================
+
+PROJECT SUMMARY
+---------------
+FinanceMate is a single-page personal finance tracker application that allows users to track their income and expenses. The application features a dashboard with a pie chart visualization, category breakdown, transaction list, and CRUD operations for transactions. All data is user-specific and protected by JWT authentication.
+
+Works like Excel: Enter salary → Add expenses → See balance calculated automatically.
+
+HOW IT WORKS (Excel Analogy)
+-----------------------------
+Row 1: Monthly Salary ($5000)
+Rows 2+: Expenses (Food $200, Transport $150, etc.)
+Summary: Balance = Salary - Total Expenses ($4350)
+
+All calculations update automatically when data changes.
+
+COMPONENTS EXPLANATION
+----------------------
+1. LoginPage - User authentication (ALWAYS shown first - no auto-login)
+2. DashboardPage - Main SPA screen
+   - SalaryCard: Enter/edit monthly salary (Excel Row 1 - base income)
+   - SummaryCards: Income, Expenses, Balance + Final Balance display
+   - PieChartCard: Visual chart showing Salary + Expenses distribution
+     * Center shows: Total Salary, Total Expenses, Final Balance
+     * Chart includes salary as green slice + expense categories
+   - CategoryList: Categories with three dots menu (View Details)
+   - CategoryDetailsModal: Shows all transactions in selected category
+   - TransactionList: All expenses with three dots menu (View/Edit/Delete)
+   - AddTransactionModal: Add new expense
+   - EditTransactionModal: Edit expense
+   - TransactionDetailsModal: View full transaction details
+   - FloatingAddButton: Quick add button ("Add Expense")
+
+CALCULATION LOGIC
+-----------------
+1. Salary stored as income transaction (type="income", title="Monthly Salary")
+2. Expenses stored as expense transactions
+3. Balance = Total Income - Total Expenses (auto-calculated)
+4. Pie chart shows: Salary (green) + Expense categories (different colors)
+5. Chart center displays: Total Salary, Total Expenses, Final Balance
+6. Final Balance shown prominently below summary cards
+7. Salary updates automatically refresh all data (summary + transactions)
+
+TECH STACK
+----------
+Frontend:
+- React.js 18+
+- Vite (build tool)
+- React Router (for /login and /app routes)
+- Context API (for auth and global state)
+- Axios (HTTP client)
+- Chart.js or Recharts (for pie chart visualization)
+- TailwindCSS (styling)
+- React Icons (icon library)
+
+Backend:
+- Node.js 18+
+- Express.js (web framework)
+- Mongoose (MongoDB ODM)
+- JSON Web Tokens (JWT) for authentication
+- bcrypt (password hashing)
+
+Database:
+- MongoDB Atlas (cloud MongoDB)
+
+Deployment:
+- Frontend: Vercel
+- Backend: Render or Railway
+
+HOW TO RUN LOCALLY
+------------------
+
+BACKEND SETUP:
+1. Navigate to backend directory:
+   cd backend
+
+2. Install dependencies:
+   npm install
+
+3. Create .env file (copy from .env.example):
+   cp .env.example .env
+
+4. Edit .env with your configuration:
+   PORT=4000
+   MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/financemate_db?retryWrites=true&w=majority
+   JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+   NODE_ENV=development
+   FRONTEND_URL=http://localhost:5173
+
+5. Start the server:
+   npm start
+   # or for development with auto-reload:
+   npm run dev
+
+The backend will run on http://localhost:4000
+
+FRONTEND SETUP:
+1. Navigate to frontend directory:
+   cd frontend
+
+2. Install dependencies:
+   npm install
+
+3. Create .env file:
+   VITE_API_URL=http://localhost:4000
+
+4. Start development server:
+   npm run dev
+
+The frontend will run on http://localhost:5173 (default Vite port)
+
+5. Access application:
+   Open browser: http://localhost:5173
+   You will ALWAYS see login page first (no auto-login)
+   After login, you'll be redirected to dashboard
+
+ENVIRONMENT VARIABLES
+---------------------
+
+BACKEND (.env):
+- PORT: Server port (default: 4000)
+- MONGO_URI: MongoDB Atlas connection string
+- JWT_SECRET: Secret key for JWT token signing (use a strong random string)
+- NODE_ENV: Environment mode (development/production)
+
+FRONTEND (.env):
+- VITE_API_URL: Backend API URL (http://localhost:4000 for local, your Render/Railway URL for production)
+
+API ENDPOINTS
+-------------
+
+AUTHENTICATION:
+- POST /api/register
+  Request Body:
+  {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password123"
+  }
+  Response (201):
+  {
+    "success": true,
+    "message": "User registered successfully",
+    "data": {
+      "user": {
+        "id": "user_id",
+        "name": "John Doe",
+        "email": "john@example.com"
+      },
+      "token": "jwt_token_here"
+    }
+  }
+
+- POST /api/login
+  Request Body:
+  {
+    "email": "john@example.com",
+    "password": "password123"
+  }
+  Response (200):
+  {
+    "success": true,
+    "message": "Login successful",
+    "data": {
+      "user": {
+        "id": "user_id",
+        "name": "John Doe",
+        "email": "john@example.com"
+      },
+      "token": "jwt_token_here"
+    }
+  }
+
+TRANSACTIONS:
+- GET /api/transactions?month=2025-01&page=1&limit=50
+  Headers: Authorization: Bearer <token>
+  Response (200):
+  {
+    "success": true,
+    "message": "Transactions retrieved successfully",
+    "data": {
+      "transactions": [...],
+      "pagination": {
+        "page": 1,
+        "limit": 50,
+        "total": 100,
+        "pages": 2
+      }
+    }
+  }
+
+- POST /api/transactions
+  Headers: Authorization: Bearer <token>
+  Request Body:
+  {
+    "title": "Grocery Shopping",
+    "type": "expense",
+    "category": "Food",
+    "amount": 75.50,
+    "date": "2025-01-15T00:00:00.000Z",
+    "description": "Weekly groceries"
+  }
+  Response (201):
+  {
+    "success": true,
+    "message": "Transaction created successfully",
+    "data": {
+      "transaction": { ... }
+    }
+  }
+
+- PUT /api/transactions/:id
+  Headers: Authorization: Bearer <token>
+  Request Body: (same as POST)
+  Response (200):
+  {
+    "success": true,
+    "message": "Transaction updated successfully",
+    "data": {
+      "transaction": { ... }
+    }
+  }
+
+- DELETE /api/transactions/:id
+  Headers: Authorization: Bearer <token>
+  Response (204): No content
+
+SUMMARY:
+- GET /api/transactions/summary?month=2025-01
+  Headers: Authorization: Bearer <token>
+  Response (200):
+  {
+    "success": true,
+    "message": "Summary retrieved successfully",
+    "data": {
+      "totalIncome": 5000.00,
+      "totalExpense": 2500.00,
+      "balance": 2500.00,
+      "categories": [
+        { "category": "Food", "total": 800.00 },
+        { "category": "Transport", "total": 500.00 },
+        { "category": "Leisure", "total": 300.00 },
+        { "category": "Bills", "total": 600.00 },
+        { "category": "Health", "total": 200.00 },
+        { "category": "Others", "total": 100.00 }
+      ],
+      "month": "2025-01"
+    }
+  }
+
+NOTE: The summary endpoint path is /api/transactions/summary (not /api/summary)
+
+DEPLOYMENT STEPS
+----------------
+
+BACKEND DEPLOYMENT (Render/Railway):
+
+1. Create account on Render.com or Railway.app
+
+2. Create a new Web Service
+
+3. Connect your GitHub repository
+
+4. Set build command: npm install
+
+5. Set start command: npm start
+
+6. Configure environment variables:
+   - PORT: (auto-assigned, but keep in env)
+   - MONGO_URI: Your MongoDB Atlas connection string
+   - JWT_SECRET: Your secret key (generate a strong random string)
+   - NODE_ENV: production
+
+7. Deploy the service
+
+8. Note the deployed URL (e.g., https://financemate-api.onrender.com)
+
+FRONTEND DEPLOYMENT (Vercel):
+
+1. Create account on Vercel.com
+
+2. Import your GitHub repository
+
+3. Set root directory to "frontend"
+
+4. Set build command: npm run build
+
+5. Set output directory: dist
+
+6. Configure environment variable:
+   - VITE_API_URL: Your backend URL from step 8 above
+
+7. Deploy
+
+8. Update backend CORS settings if needed to allow your Vercel domain
+
+CODE CONVENTIONS
+----------------
+
+- All code, variable names, function names, file names, and comments must be in English
+- Use camelCase for variables and functions (e.g., getUserTransactions, totalIncome)
+- Use PascalCase for React components (e.g., DashboardPage, TransactionList)
+- Use kebab-case for file names (e.g., transaction-controller.js, auth-routes.js)
+- Use descriptive names that explain purpose
+- Write clear comments for complex logic
+- Follow ESLint/Prettier configuration (Airbnb or Standard style)
+
+KNOWN LIMITATIONS & FUTURE IMPROVEMENTS
+---------------------------------------
+
+LIMITATIONS:
+- JWT tokens expire after 7 days (no refresh token mechanism)
+- No password reset functionality
+- Categories are predefined and cannot be customized by users
+- No multi-currency support
+- No data export functionality
+- No budget goals or limits per category
+
+FUTURE IMPROVEMENTS:
+- Add refresh token mechanism for better security
+- Implement password reset via email
+- Allow users to create custom categories
+- Add multi-currency support with exchange rates
+- Export transactions to CSV/PDF
+- Add monthly budget goals per category
+- Implement push/email notifications for bills
+- Add transaction search and advanced filtering
+- Add recurring transactions
+- Add data visualization improvements (bar charts, trends over time)
+- Add dark mode support
+
+VALIDATION RULES
+----------------
+
+REGISTRATION:
+- Name: minimum 2 characters
+- Email: must be valid email format
+- Password: minimum 8 characters
+
+TRANSACTION:
+- Title: required, minimum 1 character
+- Type: must be "income" or "expense"
+- Category: must be one of: Food, Transport, Leisure, Bills, Health, Others
+- Amount: required, must be positive number
+- Date: required, must be valid date
+- Description: optional
+
+DEFAULT CATEGORIES
+------------------
+- Food
+- Transport
+- Leisure
+- Bills
+- Health
+- Others
+
+FEATURES & FUNCTIONALITY
+------------------------
+- Single Page Application (SPA) - everything on one screen
+- Login page always shown first (no auto-login, forces authentication)
+- Monthly salary management (set/edit salary via SalaryCard)
+- Automatic balance calculation (Salary - Expenses)
+- Pie chart showing Salary + Expenses distribution:
+  * Salary appears as green slice in chart
+  * Expense categories appear as different colored slices
+  * Chart center displays: Total Salary, Total Expenses, Final Balance
+- Final Balance displayed prominently below summary cards:
+  * Green background if positive balance
+  * Red background if negative balance (over budget)
+- Category details modal - click "View Details" on category to see all transactions
+- Transaction management:
+  * Add expenses via floating "+" button
+  * Edit/Delete via three dots menu on each transaction
+  * View full details via three dots menu
+- Category filtering - click category to filter transaction list
+- Monthly view with navigation (previous/next month buttons)
+- Real-time updates - all calculations update automatically when data changes
+- Salary updates automatically refresh summary and transaction list
+
+DATABASE SCHEMA
+---------------
+
+Users Collection:
+{
+  _id: ObjectId,
+  name: String (required, min 2),
+  email: String (required, unique, lowercase),
+  password: String (required, hashed with bcrypt),
+  createdAt: Date,
+  updatedAt: Date
+}
+
+Transactions Collection:
+{
+  _id: ObjectId,
+  user_id: ObjectId (required, ref: 'User'),
+  title: String (required, min 1),
+  type: String (required, enum: ['income', 'expense']),
+  category: String (required, enum: ['Food', 'Transport', 'Leisure', 'Bills', 'Health', 'Others']),
+  amount: Number (required, positive),
+  date: Date (required),
+  description: String (optional),
+  createdAt: Date,
+  updatedAt: Date
+}
+
+Indexes:
+- transactions: { user_id: 1, date: -1 } (for efficient querying)
+
+SECURITY NOTES
+--------------
+- All passwords are hashed using bcrypt before storage
+- JWT tokens are used for authentication
+- All protected routes verify token and user ownership
+- CORS is configured to allow only frontend domain in production
+- Input validation is performed on both client and server side
+- MongoDB injection is prevented through Mongoose ODM
+
